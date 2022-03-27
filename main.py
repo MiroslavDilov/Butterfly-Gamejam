@@ -7,6 +7,33 @@ window = pygame.display.set_mode((600,600))
 window.fill((0,0,0))
 running = True
 
+
+class Background:
+    def __init__(self):
+        self.bg_img = pygame.image.load('images/background.png')
+        self.rect_bg_img = self.bg_img.get_rect()
+
+        self.bg_x1 = 0
+        self.bg_y1 = 0
+
+        self.bg_x2 = 0
+        self.bg_y2 = self.rect_bg_img.height
+
+        self.move_speed = 0.1
+
+    def update(self):
+        self.bg_y1 += self.move_speed
+        self.bg_y2 += self.move_speed
+        if self.bg_y1 >= self.rect_bg_img.height:
+            self.bg_y1 = -self.rect_bg_img.height
+        if self.bg_y2 >= self.rect_bg_img.height:
+            self.bg_y2 = -self.rect_bg_img.height
+
+    def render(self):
+        window.blit(self.bg_img, (self.bg_x1, self.bg_y1))
+        window.blit(self.bg_img, (self.bg_x2, self.bg_y2))
+
+
 class Frog:
     def __init__(self):
         self.mouse_rect = pygame.rect.Rect(0,0,50,50)
@@ -48,10 +75,20 @@ class Frog:
 
 class Butterfly:
     def __init__(self):
-        self.pos_rect = pygame.rect.Rect(randint(200, 400), randint(200,400), 30, 30)
+        self.img = pygame.image.load('images/butterfly.png')
+        # self.pos_rect = pygame.rect.Rect(randint(100, 500), randint(200,400), 30, 30)
+        self.pos_rect = self.img.get_rect()
+        self.x = randint(100, 500)
+        self.y = randint(200, 400)
+
+
+    def fall(self):
+        self.y += 0.1
+        # self.pos_rect.midtop = (self.pos_rect.midtop[0], self.pos_rect.midtop[1]+round(0.1))
 
     def draw_butterfly(self):
-        pygame.draw.rect(window, (165, 77, 219), self.pos_rect)
+        # pygame.draw.rect(window, (165, 77, 219), self.pos_rect)
+        window.blit(self.img, (self.x, self.y))
 
     def detect_collision(self, x1, y1, x2, y2):
         test = self.pos_rect.clipline(x1, y1, x2, y2)
@@ -66,14 +103,17 @@ def butterfly_generator(num=10):
         butterfly_array.append(Butterfly())
     return butterfly_array
 
+
+background = Background()
 frog = Frog()
 # butterfly = Butterfly()
-butterflies = butterfly_generator(num=20)
+butterflies = butterfly_generator(num=10)
 
 draw = False
 while running:
     # Making the keys repeat when pressed
-    window.fill((255,255,255))
+    background.update()
+    background.render()
     pygame.key.set_repeat(1, 10)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -87,6 +127,7 @@ while running:
             draw = True
 
     for butterfly in butterflies:
+        butterfly.fall()
         butterfly.draw_butterfly()
         if draw:
             butterfly.detect_collision(
