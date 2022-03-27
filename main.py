@@ -28,7 +28,7 @@ class Frog:
             self.y -= self.move
         if key == pygame.K_DOWN:
             self.y += self.move
-        if key == None:
+        if key is None:
             pass
         self.frog_rect.midtop = self.x, self.y
 
@@ -36,14 +36,15 @@ class Frog:
         self.frog_rect.midtop = self.x, self.y
         pygame.draw.rect(window, (255,0,0), self.frog_rect)
 
-    def draw_line(self, show=False):
+    def draw_line(self, show):
         if show == True:
-            pygame.draw.line(window, (0,0,255), self.frog_rect.center, self.mouse_rect.center, width=2)
+            pygame.draw.line(window, (0,0,255), self.frog_rect.midtop, self.mouse_rect.midbottom, width=2)
         else:
             pass
 
     def positions(self):
         return self.frog_rect[0], self.mouse_rect[0]
+
 
 class Butterfly:
     def __init__(self):
@@ -58,6 +59,7 @@ class Butterfly:
         if test != ():
             pygame.draw.rect(window, (20, 17, 38), self.pos_rect)
 
+
 def butterfly_generator(num=10):
     butterfly_array = []
     for i in range(num):
@@ -66,8 +68,9 @@ def butterfly_generator(num=10):
 
 frog = Frog()
 # butterfly = Butterfly()
-butterflies = butterfly_generator()
+butterflies = butterfly_generator(num=20)
 
+draw = False
 while running:
     # Making the keys repeat when pressed
     window.fill((255,255,255))
@@ -75,15 +78,25 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             frog.move_frog(key=event.key)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print("halo")
-            frog.draw_line(show=True)
+        elif event.type == pygame.MOUSEBUTTONUP:
+            draw = False
+        left_button = pygame.mouse.get_pressed()[0]
+        if  left_button == True:
+            draw = True
+
     for butterfly in butterflies:
         butterfly.draw_butterfly()
-        butterfly.detect_collision(frog.frog_rect.center[0], frog.frog_rect.center[1], frog.mouse_rect.center[0], frog.mouse_rect.center[1])
+        if draw:
+            butterfly.detect_collision(
+                frog.frog_rect.midtop[0],
+                frog.frog_rect.midtop[1],
+                frog.mouse_rect.midbottom[0],
+                frog.mouse_rect.midbottom[1])
+
     frog.draw_frog()
     frog.update_mouse()
+    frog.draw_line(draw)
 
     pygame.display.flip()
