@@ -36,6 +36,7 @@ class Background:
 
 class Frog:
     def __init__(self):
+        self.frog_img = pygame.image.load("images/frog.png")
         self.mouse_rect = pygame.rect.Rect(0,0,50,50)
         self.x, self.y = 300, 500
         self.frog_rect = pygame.rect.Rect(self.x, self.y, 50, 50)
@@ -60,8 +61,9 @@ class Frog:
         self.frog_rect.midtop = self.x, self.y
 
     def draw_frog(self):
-        self.frog_rect.midtop = self.x, self.y
-        pygame.draw.rect(window, (255,0,0), self.frog_rect)
+        self.frog_rect.topleft = self.x, self.y
+        window.blit(self.frog_img, (self.x, self.y))
+        # pygame.draw.rect(window, (255,0,0), self.frog_rect)
 
     def draw_line(self, show):
         if show == True:
@@ -77,18 +79,14 @@ class Butterfly:
     def __init__(self):
         self.img = pygame.image.load('images/butterfly.png')
         # self.pos_rect = pygame.rect.Rect(randint(100, 500), randint(200,400), 30, 30)
-        self.x = randint(100, 500)
-        self.y = randint(200, 400)
+        self.x = randint(50, 500)
+        self.y = randint(-20, 100)
         self.pos_rect = pygame.rect.Rect(self.x, self.y, 30,30)
 
-
     def fall(self):
-        # self.y += 0.1
-        pass
-        # self.pos_rect.midtop = (self.pos_rect.midtop[0], self.pos_rect.midtop[1]+round(0.1))
+        self.y += 0.1
 
     def draw_butterfly(self):
-        # pygame.draw.rect(window, (165, 77, 219), self.pos_rect)
         self.pos_rect.topleft = (self.x, self.y)
         window.blit(self.img, (self.x, self.y))
 
@@ -98,7 +96,12 @@ class Butterfly:
         pygame.draw.line(window, (0,0,0), (x1, y1), (x2, y2))
         if test != ():
             pygame.draw.rect(window, (20, 17, 38), self.pos_rect)
-            print("Collided")
+
+    def is_off_screen(self):
+        if self.y > 630:
+            return True
+        else:
+            return False
 
 
 def butterfly_generator(num=10):
@@ -138,7 +141,11 @@ while running:
                 frog.frog_rect.midtop[0],
                 frog.frog_rect.midtop[1],
                 frog.mouse_rect.midbottom[0],
-                frog.mouse_rect.midbottom[1])
+                frog.mouse_rect.midbottom[1]
+            )
+        if butterfly.is_off_screen():
+            butterflies.remove(butterfly)
+            butterflies.append(Butterfly())
 
     frog.draw_frog()
     frog.update_mouse()
