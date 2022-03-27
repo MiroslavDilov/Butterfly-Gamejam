@@ -77,24 +77,28 @@ class Butterfly:
     def __init__(self):
         self.img = pygame.image.load('images/butterfly.png')
         # self.pos_rect = pygame.rect.Rect(randint(100, 500), randint(200,400), 30, 30)
-        self.pos_rect = self.img.get_rect()
         self.x = randint(100, 500)
         self.y = randint(200, 400)
+        self.pos_rect = pygame.rect.Rect(self.x, self.y, 30,30)
 
 
     def fall(self):
-        self.y += 0.1
+        # self.y += 0.1
+        pass
         # self.pos_rect.midtop = (self.pos_rect.midtop[0], self.pos_rect.midtop[1]+round(0.1))
 
     def draw_butterfly(self):
         # pygame.draw.rect(window, (165, 77, 219), self.pos_rect)
+        self.pos_rect.topleft = (self.x, self.y)
         window.blit(self.img, (self.x, self.y))
 
     def detect_collision(self, x1, y1, x2, y2):
         test = self.pos_rect.clipline(x1, y1, x2, y2)
-        # pygame.draw.line(window, (0,0,0), (x1, y1), (x2, y2))
+        # print(self.pos_rect)
+        pygame.draw.line(window, (0,0,0), (x1, y1), (x2, y2))
         if test != ():
             pygame.draw.rect(window, (20, 17, 38), self.pos_rect)
+            print("Collided")
 
 
 def butterfly_generator(num=10):
